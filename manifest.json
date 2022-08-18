@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name" : "Facebook CM",
+  "version" : "1.1",
+  "description" : "Facebook Groupの投稿を自動的に新着順へ並べ替えます。",
+  "icons": {
+    "128": "icon.png"
+  },
+  "content_scripts": [{
+      "run_at": "document_start",
+      "matches": ["https://www.facebook.com/groups/*"],
+      "js": ["content.js"]
+  }]
+}
