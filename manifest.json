@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name" : "Facebook CM",
+  "name" : "Facebook Sorter",
   "version" : "1.1",
   "description" : "Facebook Groupの投稿を自動的に新着順へ並べ替えます。",
   "icons": {
