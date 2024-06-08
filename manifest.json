@@ -1,16 +1,28 @@
 {
   "manifest_version": 3,
-  "name" : "Facebook Group Sorter",
-  "version" : "0",
-  "description" : "Facebook Groupの投稿を自動的に新着順へ並べ替えます。",
+  "name": "Facebook Group Sorter",
+  "version": "1.0.0",
+  "description": "Facebook Groupの投稿を自動的に新着順へ並べ替えます。",
+  "background": {
+    "service_worker": "background.js"
+  },
   "icons": {
     "16": "icon16.png",
     "48": "icon48.png",
     "128": "icon128.png"
-},
-  "content_scripts": [{
+  },
+  "content_scripts": [
+    {
       "run_at": "document_start",
-      "matches": ["https://www.facebook.com/*"],
-      "js": ["content.js"]
-  }]
+      "matches": [
+        "https://www.facebook.com/*"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ],
+  "permissions": [
+    "tabs"
+  ]
 }
