@@ -1,7 +1,8 @@
-# facebook-sort
+# Facebook Group Sorter
 Facebookのグループ内投稿を新しい順に並べ替えるやつ。CM/MC向け？
 
-## 【リリース申請中】
+## 【ダウンロードはこちら】
+[Chrome Webstore](https://chromewebstore.google.com/detail/facebook-group-sorter/abomafegiimpaggfkbjdofmpfdglooap)
 
 ## 使い方
 1.ZIP形式でダウンロード→解凍
