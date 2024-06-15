@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Facebook Group Sorter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Facebook Groupの投稿を自動的に新着順へ並べ替えます。",
   "background": {
     "service_worker": "background.js"

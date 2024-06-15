@@ -1,9 +1,9 @@
 function urlCheck() {
     var url = window.location.href;
     var has_redirect = url.includes('CHRONOLOGICAL');
-    var is_groupspage = url.match(/.*\/groups\/[a-zA-Z0-9.]{7,}$/);
+    var is_groupspage = url.match(/.*\/groups\/[a-zA-Z0-9.?=&]{7,}$/);
     if (!has_redirect && is_groupspage) {
-        var new_url = url + '?sorting_setting=CHRONOLOGICAL';
+        var new_url = url.split('?')[0] + '?sorting_setting=CHRONOLOGICAL';
         window.location.replace(new_url);
     }
 }
