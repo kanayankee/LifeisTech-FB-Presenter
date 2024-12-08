@@ -5,3 +5,9 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         });
     }
 });
+
+chrome.runtime.onInstalled.addListener(function (details) {
+    if (details.reason === "install") {
+        chrome.tabs.create({ url: "https://kanayan.tech/lit-fb-install" });
+    }
+});

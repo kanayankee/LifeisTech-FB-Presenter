@@ -1,28 +1,31 @@
 {
-  "manifest_version": 3,
-  "name": "Facebook Group Sorter",
-  "version": "1.2.0",
-  "description": "Facebook Groupの投稿を自動的に新着順へ並べ替えます。",
-  "background": {
-    "service_worker": "background.js"
-  },
-  "icons": {
-    "16": "icon16.png",
-    "48": "icon48.png",
-    "128": "icon128.png"
-  },
-  "content_scripts": [
-    {
-      "run_at": "document_start",
-      "matches": [
-        "https://www.facebook.com/*"
-      ],
-      "js": [
-        "content.js"
-      ]
-    }
-  ],
-  "permissions": [
-    "tabs"
-  ]
+    "manifest_version": 3,
+    "name": "Life is Tech ! Facebook Presenter",
+    "short_name": "LiT! FB Presenter",
+    "version": "1.0.0",
+    "description": "Life is Tech ! の Facebookグループの投稿を自動的に最新順に並べ替え、投稿を大きく表示させる拡張機能です。",
+    "background": {
+        "service_worker": "background.js"
+    },
+    "icons": {
+        "16": "icon16.png",
+        "48": "icon48.png",
+        "128": "icon128.png"
+    },
+    "content_scripts": [
+        {
+            "run_at": "document_idle",
+            "matches": [
+                "https://www.facebook.com/*"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ],
+    "permissions": [
+        "activeTab",
+        "tabs",
+        "scripting"
+    ]
 }
