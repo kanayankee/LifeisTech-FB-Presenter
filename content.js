@@ -17,15 +17,13 @@ function urlCheck() {
                 fullscreenButton.style.marginBottom = '16px';
                 fullscreenButton.style.display = 'flex';
                 fullscreenButton.innerHTML = '<button id="presentation" style="background:#0765FF;color:white;padding:10px 15px;border-radius:5px;border:0;font-size:1em;cursor:pointer;white-space:nowrap;"><b>プレゼンテーションモード</b></button>';
-                fullscreenButton.innerHTML+= '<span style="display:block; margin:5px;">拡大したメディアを閉じる時は⌘←または二本指スワイプを使用してください。ESCを押すとプレゼンテーションモードが終了します。</span>'
+                fullscreenButton.innerHTML += '<span style="display:block; margin:5px; user-select:none; color:var(--primary-text);" class="lit-fbp_guide">拡大したメディアを閉じる時はCommand(Alt)+左矢印を使用してください。ESCを押すとプレゼンテーションモードが終了します。</span>'
                 composerElement.appendChild(fullscreenButton);
                 addButtonListener(fullscreenButton);
             }
         }
     }
-
     addPresentationButton();
-
     setInterval(addPresentationButton, 2000);
 
     let isFullscreen = false;
@@ -59,36 +57,9 @@ function urlCheck() {
                 customStyle.parentNode.removeChild(customStyle);
                 customStyle = null;
             }
+            restoreDarkMode();
         }
     });
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            const checkUrlForGroup = () => window.location.href.includes('group');
-            if (!checkUrlForGroup()) {
-                const goBackUntilGroup = () => {
-                    if (!checkUrlForGroup()) {
-                        history.back();
-                        setTimeout(goBackUntilGroup, 100);
-                    }
-                };
-                goBackUntilGroup();
-            }else{
-                if (isFullscreen) {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.mozCancelFullScreen) {
-                        document.mozCancelFullScreen();
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    } else if (document.msExitFullscreen) {
-                        document.msExitFullscreen();
-                    }
-                }
-            }
-        }
-    });
-    
 
     function addButtonListener(fullscreenButton) {
         fullscreenButton.addEventListener('click', () => {
@@ -107,7 +78,7 @@ function urlCheck() {
                 if (feedFrame) {
                     feedFrame.style.display = 'block';
                 }
-
+                changeLightMode();
                 const feedElement = document.querySelector('[data-pagelet="GroupFeed"]');
                 if (feedElement) {
                     if (feedElement.requestFullscreen) {
@@ -211,3 +182,47 @@ chrome.runtime.onMessage.addListener(
         }
     }
 );
+
+function changeLightMode() {
+    if (document.documentElement.classList.contains('__fb-dark-mode') ||
+        (!document.documentElement.classList.contains('__fb-light-mode') && !document.body.classList.contains('__fb-dark-mode'))) {
+
+        document.documentElement.classList.remove('__fb-dark-mode');
+        document.body.classList.remove('__fb-dark-mode');
+
+        localStorage.setItem('isLightModeChanged', 'true');
+        if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+            localStorage.removeItem('isLightModeChanged');
+            return
+        }
+        const colors = {
+            '--primary-text': '#050505',
+            '--secondary-text': '#65676B',
+            '--primary-icon': '#050505',
+            '--secondary-icon': '#65676B',
+            '--accent': '#1B74E4',
+            '--primary-button-background': '#1B74E4',
+            '--primary-background': '#FFFFFF',
+            '--secondary-background': '#F0F2F5',
+            '--surface-background': '#FFFFFF',
+            '--wash': '#E4E6EB',
+            '--web-wash': '#F0F2F5',
+            '--card-background': '#FFFFFF',
+            '--hover-overlay': 'rgba(0, 0, 0, 0.05)',
+            '--card-background-flat': '#EFF2F5',
+            '--comment-background': '#EFF2F5'
+        };
+
+        Object.entries(colors).forEach(([variable, value]) => {
+            document.documentElement.style.setProperty(variable, value);
+        });
+    }
+}
+
+function restoreDarkMode() {
+    if (localStorage.getItem('isLightModeChanged')) {
+        document.documentElement.classList.add('__fb-dark-mode');
+        document.body.classList.add('__fb-dark-mode');
+        localStorage.removeItem('isLightModeChanged');
+    }
+}
