@@ -23,6 +23,57 @@ const STYLES = {
             background-color: #eee;
         }
         
+        .presentation-feed.xmas-mode {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            position: relative;
+        }
+        
+        .xmas-snow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: white;
+            font-size: 1em;
+            user-select: none;
+            animation: snowfall linear infinite;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+        }
+        
+        @keyframes snowfall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0.5;
+            }
+        }
+        
+        .xmas-key-visual {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            max-width: 300px;
+            max-height: 300px;
+            z-index: 10;
+            pointer-events: none;
+            opacity: 0.95;
+            filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.3));
+        }
+        
         .presentation-feed::-webkit-scrollbar {
             display: none;
         }
@@ -34,6 +85,61 @@ const STYLES = {
             box-shadow: 0 0 15px gray;
             border-radius: 20px;
             min-height: 20px;
+        }
+        
+        .presentation-feed.xmas-mode > * {
+            position: relative;
+            z-index: 5;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.35),
+                rgba(255, 255, 255, 0.15)
+            ) !important;
+            backdrop-filter: blur(20px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            box-shadow: 
+                0 8px 30px rgba(0, 0, 0, 0.12),
+                inset 0 1px 1px rgba(255, 255, 255, 0.5) !important;
+            overflow: hidden;
+        }
+        
+        .presentation-feed.xmas-mode > *::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 0.45),
+                rgba(255, 255, 255, 0.05) 40%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            pointer-events: none;
+            z-index: 6;
+        }
+        
+        .presentation-feed.xmas-mode > *::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                circle at bottom right,
+                rgba(255, 255, 255, 0.25),
+                transparent 60%
+            );
+            pointer-events: none;
+            z-index: 6;
+        }
+        
+        .presentation-feed.xmas-mode > * > * {
+            position: relative;
+            z-index: 7;
+            background: rgba(255, 255, 255, 0.85) !important;
+            border-radius: 15px;
+        }
+        
+        .presentation-feed.xmas-mode > * * {
+            color: #1c1e21 !important;
         }
         
         .presentation-header {
@@ -59,6 +165,35 @@ const STYLES = {
             white-space: nowrap;
             font-weight: bold;
             user-select: none;
+            position: relative;
+            margin-bottom: 80px;
+        }
+        
+        .xmas-tooltip {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            transform: translateY(15px);
+            background: linear-gradient(135deg, #04141E 0%, #0a2540 100%);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 15px;
+            font-size: 1em;
+            font-weight: bold;
+            white-space: nowrap;
+            box-shadow: 0 8px 32px rgba(4, 20, 30, 0.6);
+            z-index: 1000;
+            border: 2px solid rgba(147, 197, 253, 0.6);
+            pointer-events: none;
+        }
+        
+        .xmas-tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 30px;
+            border: 10px solid transparent;
+            border-bottom-color: #04141E;
         }
         
         .presentation-guide {
@@ -124,14 +259,36 @@ class PresentationMode {
         this.isFullscreen = false;
         this.hiddenDivs = [];
         this.styleElement = null;
+        this.isXmasMode = false;
+        this.coverPhotoUrl = null;
         this.init();
     }
 
     init() {
         this.addStyles();
         this.setupFullscreenListener();
+        this.checkXmasMode();
         this.addPresentationButton();
         setInterval(() => this.addPresentationButton(), 2000);
+    }
+
+    checkXmasMode() {
+        const titleTag = document.querySelector(SELECTORS.TITLE);
+        if (titleTag) {
+            const titleText = titleTag.textContent;
+            this.isXmasMode = titleText.includes('Xmas');
+            
+            if (this.isXmasMode) {
+                this.findCoverPhoto();
+            }
+        }
+    }
+
+    findCoverPhoto() {
+        const coverPhoto = document.querySelector('img[data-imgperflogname="profileCoverPhoto"]');
+        if (coverPhoto && coverPhoto.src) {
+            this.coverPhotoUrl = coverPhoto.src;
+        }
     }
 
     addStyles() {
@@ -157,6 +314,13 @@ class PresentationMode {
         button.id = 'presentation';
         button.className = 'presentation-button';
         button.textContent = 'プレゼンテーションモード';
+
+        if (this.isXmasMode) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'xmas-tooltip';
+            tooltip.textContent = '🎅クリキャン限定デザインが使用できます！🎄';
+            button.appendChild(tooltip);
+        }
 
         const guide = document.createElement('span');
         guide.className = 'presentation-guide';
@@ -214,6 +378,49 @@ class PresentationMode {
         if (feedElement) {
             feedElement.style.display = 'block';
             feedElement.classList.add('presentation-feed');
+            
+            if (this.isXmasMode) {
+                feedElement.classList.add('xmas-mode');
+                if (this.coverPhotoUrl) {
+                    feedElement.style.backgroundImage = `url(${this.coverPhotoUrl})`;
+                }
+                this.addSnowEffect();
+                this.addKeyVisual();
+            }
+        }
+    }
+
+    addSnowEffect() {
+        const snowContainer = document.createElement('div');
+        snowContainer.className = 'xmas-snow';
+        
+        for (let i = 0; i < 50; i++) {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.textContent = ['❄', '❅', '❆'][Math.floor(Math.random() * 3)];
+            snowflake.style.left = Math.random() * 100 + '%';
+            snowflake.style.animationDuration = (Math.random() * 3 + 5) + 's';
+            snowflake.style.animationDelay = Math.random() * 5 + 's';
+            snowflake.style.fontSize = (Math.random() * 1 + 0.5) + 'em';
+            snowflake.style.opacity = Math.random() * 0.6 + 0.4;
+            snowContainer.appendChild(snowflake);
+        }
+        
+        const groupFeed = document.querySelector(SELECTORS.GROUP_FEED);
+        if (groupFeed) {
+            groupFeed.appendChild(snowContainer);
+        }
+    }
+
+    addKeyVisual() {
+        const keyVisual = document.createElement('img');
+        keyVisual.className = 'xmas-key-visual';
+        keyVisual.src = chrome.runtime.getURL('xmas2025.png');
+        keyVisual.alt = 'Christmas 2025';
+        
+        const groupFeed = document.querySelector(SELECTORS.GROUP_FEED);
+        if (groupFeed) {
+            groupFeed.appendChild(keyVisual);
         }
     }
 
@@ -290,6 +497,18 @@ class PresentationMode {
         const feedElement = document.querySelector(SELECTORS.FEED);
         if (feedElement) {
             feedElement.classList.remove('presentation-feed');
+            feedElement.classList.remove('xmas-mode');
+            feedElement.style.backgroundImage = '';
+        }
+        
+        const snowContainer = document.querySelector('.xmas-snow');
+        if (snowContainer) {
+            snowContainer.remove();
+        }
+        
+        const keyVisual = document.querySelector('.xmas-key-visual');
+        if (keyVisual) {
+            keyVisual.remove();
         }
     }
 
